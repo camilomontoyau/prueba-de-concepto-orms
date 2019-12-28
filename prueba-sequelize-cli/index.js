@@ -110,6 +110,47 @@ app.post("/tasks", async (req, res) => {
   }
 });
 
+app.post("/customers", async (req, res) => {
+  try {
+    const { body } = req;
+    const newC = await models.customer.create(body);
+    return res.status(201).json(newC);
+  } catch (err) {
+    console.log("err", err);
+    res.status(500).json({ error: err });
+  }
+});
+
+app.get("/customers", async (req, res) => {
+  try {
+    const cs = await models.customer.findAll();
+    return res.status(200).json(cs);
+  } catch (error) {
+    console.log("err", err);
+    res.status(500).json({ error: err });
+  }
+});
+
+app.put("/customers/:id", async (req, res) => {
+  try {
+    const { body } = req;
+    const { id } = req.params;
+    let user = await models.customer.findByPk(id);
+    if (!user) {
+      return res
+        .status(404)
+        .send({ error: `costumer con id = ${id} no encontrado` });
+    }
+    user.set(body);
+    const saved = await user.save();
+    console.log({ saved });
+    return res.status(200).json(user);
+  } catch (err) {
+    console.log("err", err);
+    res.status(500).json({ error: err });
+  }
+});
+
 app.listen(port, () => {
   console.log(`API funciona en http://localhost:${port}`);
 });
